@@ -19,6 +19,7 @@
  */
 
 @theme inline {
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -26,7 +27,16 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --color-mint: var(--mint);
+  --color-mint-foreground: var(--mint-foreground);
+  --color-level-low: var(--level-low);
+  --color-level-mid: var(--level-mid);
+  --color-level-high: var(--level-high);
+  --color-level-low-soft: var(--level-low-soft);
+  --color-level-mid-soft: var(--level-mid-soft);
+  --color-level-high-soft: var(--level-high-soft);
   --color-background: var(--background);
+
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
