@@ -7,9 +7,9 @@ export const levelLabel: Record<Level, string> = {
 };
 
 export const levelDot: Record<Level, string> = {
-  bajo: "🟢",
-  moderado: "🟡",
-  alto: "🔴",
+  bajo: "●",
+  moderado: "●",
+  alto: "●",
 };
 
 export const levelClasses: Record<Level, string> = {
