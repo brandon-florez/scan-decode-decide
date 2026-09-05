@@ -10,12 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConsejosRouteImport } from './routes/consejos'
 import { Route as EscanearRouteImport } from './routes/escanear'
+import { Route as HistorialRouteImport } from './routes/historial'
 import { Route as IngresarRouteImport } from './routes/ingresar'
+import { Route as ResultadoRouteImport } from './routes/resultado'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsejosRoute = ConsejosRouteImport.update({
+  id: '/consejos',
+  path: '/consejos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EscanearRoute = EscanearRouteImport.update({
@@ -23,40 +31,71 @@ const EscanearRoute = EscanearRouteImport.update({
   path: '/escanear',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistorialRoute = HistorialRouteImport.update({
+  id: '/historial',
+  path: '/historial',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IngresarRoute = IngresarRouteImport.update({
   id: '/ingresar',
   path: '/ingresar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResultadoRoute = ResultadoRouteImport.update({
+  id: '/resultado',
+  path: '/resultado',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/consejos': typeof ConsejosRoute
   '/escanear': typeof EscanearRoute
+  '/historial': typeof HistorialRoute
   '/ingresar': typeof IngresarRoute
+  '/resultado': typeof ResultadoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/consejos': typeof ConsejosRoute
   '/escanear': typeof EscanearRoute
+  '/historial': typeof HistorialRoute
   '/ingresar': typeof IngresarRoute
+  '/resultado': typeof ResultadoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/consejos': typeof ConsejosRoute
   '/escanear': typeof EscanearRoute
+  '/historial': typeof HistorialRoute
   '/ingresar': typeof IngresarRoute
+  '/resultado': typeof ResultadoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/escanear' | '/ingresar'
+  fullPaths:
+    '/' | '/consejos' | '/escanear' | '/historial' | '/ingresar' | '/resultado'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/escanear' | '/ingresar'
-  id: '__root__' | '/' | '/escanear' | '/ingresar'
+  to:
+    '/' | '/consejos' | '/escanear' | '/historial' | '/ingresar' | '/resultado'
+  id:
+    | '__root__'
+    | '/'
+    | '/consejos'
+    | '/escanear'
+    | '/historial'
+    | '/ingresar'
+    | '/resultado'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConsejosRoute: typeof ConsejosRoute
   EscanearRoute: typeof EscanearRoute
+  HistorialRoute: typeof HistorialRoute
   IngresarRoute: typeof IngresarRoute
+  ResultadoRoute: typeof ResultadoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -68,11 +107,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/consejos': {
+      id: '/consejos'
+      path: '/consejos'
+      fullPath: '/consejos'
+      preLoaderRoute: typeof ConsejosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/escanear': {
       id: '/escanear'
       path: '/escanear'
       fullPath: '/escanear'
       preLoaderRoute: typeof EscanearRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/historial': {
+      id: '/historial'
+      path: '/historial'
+      fullPath: '/historial'
+      preLoaderRoute: typeof HistorialRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ingresar': {
@@ -82,13 +135,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IngresarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resultado': {
+      id: '/resultado'
+      path: '/resultado'
+      fullPath: '/resultado'
+      preLoaderRoute: typeof ResultadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConsejosRoute: ConsejosRoute,
   EscanearRoute: EscanearRoute,
+  HistorialRoute: HistorialRoute,
   IngresarRoute: IngresarRoute,
+  ResultadoRoute: ResultadoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
