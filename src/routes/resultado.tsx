@@ -1,8 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { FlaskConical, Lightbulb, ChevronLeft } from "lucide-react";
+import { FlaskConical, Lightbulb, ChevronLeft, Languages, Info } from "lucide-react";
 import { PhoneShell } from "@/components/PhoneShell";
-import { analysis, levelClasses, levelDot, levelLabel } from "@/data/nutrilex";
+import {
+  analysis,
+  levelClasses,
+  levelDot,
+  levelExplanations,
+  levelLabel,
+  informativeNote,
+} from "@/data/nutrilex";
 
 export const Route = createFileRoute("/resultado")({
   component: Resultado,
@@ -57,6 +64,48 @@ function Resultado() {
             </span>
           </div>
         ))}
+      </section>
+
+      <section className="mt-8">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+          <Languages className="size-5 text-primary" /> Tu etiqueta en palabras simples
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Así se lee lo que dice la etiqueta que escaneaste.
+        </p>
+        <ul className="mt-3 space-y-3">
+          {a.labelTranslation.map((row) => (
+            <li key={row.original} className="rounded-2xl border border-border bg-card p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                La etiqueta dice
+              </p>
+              <p className="mt-0.5 font-mono text-sm text-foreground/70">{row.original}</p>
+              <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-primary">
+                En palabras simples
+              </p>
+              <p className="mt-0.5 text-sm font-medium text-foreground">{row.translated}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+          <Info className="size-5 text-primary" /> ¿Qué significan los niveles?
+        </h2>
+        <ul className="mt-3 space-y-3">
+          {levelExplanations.map((e) => (
+            <li key={e.level} className={`rounded-2xl p-4 ${levelClasses[e.level]}`}>
+              <p className="font-bold">
+                {levelDot[e.level]} {e.title}
+              </p>
+              <p className="mt-1 text-sm font-medium text-foreground/80">{e.text}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 rounded-2xl bg-accent/60 p-4 text-sm text-muted-foreground">
+          {informativeNote}
+        </p>
       </section>
 
       <section className="mt-8">

@@ -52,7 +52,54 @@ export const analysis = {
     "Compara productos similares.",
     "Si tiene mucho sodio, considera otra opción.",
   ],
+  labelTranslation: [
+    {
+      original: "Azúcares 12 g por porción",
+      translated:
+        "Cada porción tiene el equivalente a 3 cucharaditas de azúcar. Es una cantidad considerable para un solo producto.",
+    },
+    {
+      original: "Sodio 180 mg por porción",
+      translated:
+        "Contiene algo de sal: alrededor de un tercio de cucharadita. Está dentro de un rango medio.",
+    },
+    {
+      original: "Grasas totales 3 g por porción",
+      translated:
+        "Es poca grasa, menos de una cucharadita de aceite. Este punto está bien.",
+    },
+    {
+      original: "120 kcal por porción",
+      translated:
+        "Aporta energía similar a una manzana grande. Es una cantidad baja.",
+    },
+  ],
 };
+
+export const levelExplanations: {
+  level: Level;
+  title: string;
+  text: string;
+}[] = [
+  {
+    level: "bajo",
+    title: "Bajo",
+    text: "La cantidad de este nutriente es pequeña en relación con lo que se suele consumir al día.",
+  },
+  {
+    level: "moderado",
+    title: "Moderado",
+    text: "La cantidad no es ni poca ni mucha. Conviene tenerla en cuenta si consumes varios productos similares.",
+  },
+  {
+    level: "alto",
+    title: "Alto",
+    text: "La cantidad de este nutriente es grande comparada con lo habitual. La etiqueta lo indica para que lo sepas.",
+  },
+];
+
+export const informativeNote =
+  "NutriLex traduce la información de las etiquetas a palabras simples. Es una herramienta meramente informativa: no emite alertas de salud ni recomendaciones médicas.";
 
 export const history = [
   { name: "Cereal de chocolate", level: "alto" as Level, when: "Analizado hoy" },
