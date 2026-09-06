@@ -1,13 +1,12 @@
 import type { ReactNode } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Camera, History, Lightbulb } from "lucide-react";
+import { Home, Camera, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/", label: "Inicio", icon: Home },
   { to: "/escanear", label: "Escanear", icon: Camera, highlight: true },
   { to: "/historial", label: "Historial", icon: History },
-  { to: "/consejos", label: "Consejos", icon: Lightbulb },
 ] as const;
 
 export function PhoneShell({ children }: { children: ReactNode }) {
