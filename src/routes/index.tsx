@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Camera, PencilLine, Leaf } from "lucide-react";
 import { PhoneShell } from "@/components/PhoneShell";
-import { history, levelClasses, levelDot, levelLabel } from "@/data/nutrilex";
+import { ListaAnalisis } from "@/components/TarjetaAnalisis";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Escanea la etiqueta de un producto y entiende en segundos si sus azúcares, sodio, grasas y calorías son bajos, moderados o altos.",
+          "Escanea la etiqueta de un producto y entiende en segundos sus azúcares, sodio, grasas, fibra, proteína y calorías.",
       },
       { property: "og:title", content: "NutriLex — Entiende lo que comes" },
       {
@@ -62,24 +62,7 @@ function Index() {
             Ver todo
           </Link>
         </div>
-        <ul className="mt-3 space-y-3">
-          {history.slice(0, 2).map((item) => (
-            <li
-              key={item.name}
-              className="flex items-center justify-between rounded-2xl border border-border bg-card p-4"
-            >
-              <div>
-                <p className="font-semibold text-foreground">{item.name}</p>
-                <p className="text-sm text-muted-foreground">{item.when}</p>
-              </div>
-              <span
-                className={`rounded-full px-3 py-1 text-sm font-bold ${levelClasses[item.level]}`}
-              >
-                {levelDot[item.level]} {levelLabel[item.level]}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <ListaAnalisis limite={2} />
       </section>
     </PhoneShell>
   );

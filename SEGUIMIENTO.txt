@@ -1,0 +1,252 @@
+NutriLex — seguimiento de trabajo
+================================
+
+Este archivo es la guía de construcción y la bitácora.
+Marca cada paso con [x] cuando cumpla su criterio de "Listo cuando".
+En la bitácora, al final, anota la fecha, qué quedó hecho y qué sigue.
+
+Estado de hoy: los pasos 1 a 9 están hechos. El dato escrito y la
+foto de la misma etiqueta coinciden: Alto, 3 cucharaditas y las dos
+traducciones. El análisis y la lectura se quedan en el navegador.
+Supabase guarda ingredientes e historial.
+Lo que falta para una etiqueta real está en PLAN.txt.
+
+Supabase ya está conectado (src/lib/supabase.ts y .env.local).
+La tabla public.ingredientes existe. Ingresar datos la consulta al
+traducir la etiqueta.
+
+
+Dónde entra Supabase
+--------------------
+El análisis se queda en el navegador: léxico, sintaxis, semántica,
+traducción y lectura de la imagen. Supabase no calcula el reporte.
+
+Supabase guarda lo que tiene que sobrevivir al recargar la página:
+  - tabla de símbolos de ingredientes (paso 4)
+  - historial de análisis, con su texto, niveles y traducción (paso 8)
+
+La clave del archivo .env.local es la publishable. No crea tablas.
+public.ingredientes y public.analisis ya están creadas.
+No subas .env.local al repositorio.
+
+
+Por qué este orden
+------------------
+La foto y el formulario deben producir el mismo texto de etiqueta.
+El traductor solo entiende ese texto. Primero se construye y se prueba
+el traductor con datos escritos (el ejemplo de la propuesta). Después
+se conecta la imagen: la persona elige una foto ya tomada, el navegador
+reconoce el texto, se puede corregir y ese texto entra al mismo traductor.
+
+No conviene empezar por la foto. El reconocimiento se equivoca, y si
+el traductor aún no existe no se puede saber si falló la imagen o el
+análisis.
+
+
+Contrato común (foto y formulario)
+----------------------------------
+Texto de etiqueta, una idea por línea:
+
+  Porción: 30 g
+  Azúcares: 12 g
+  Sodio: 180 mg
+  Grasas: 3 g
+  Calorías: 120 kcal
+  Ingredientes: jarabe de maíz de alta fructosa, glutamato monosódico
+
+La imagen debe terminar en este texto. El formulario también.
+A partir de aquí el recorrido es único:
+
+  texto -> tokens -> árbol AST -> reglas y niveles -> lenguaje cotidiano -> reporte
+
+El apartado visual muestra esas etapas del análisis que acaba de correr.
+
+
+Secuencia
+---------
+
+[x] 1. Lenguaje fuente
+    Hecho en src/traductor/lenguaje-fuente.ts.
+    Secuencia del texto: Porción, Azúcares, Sodio, Grasas, Calorías,
+    Ingredientes. Porción e ingredientes son obligatorios. Hace falta
+    al menos un nutriente. Unidades permitidas: porción, azúcares y
+    grasas en g, sodio en mg, calorías en kcal.
+    Una etiqueta incompleta se rechaza aquí, antes del análisis.
+    El ejemplo de la propuesta y el contrato completo caben en el formato.
+    La pantalla todavía no llama a este módulo. Eso llega en el paso 5.
+
+[x] 2. Análisis léxico
+    Hecho en src/traductor/analisis-lexico.ts.
+    Tipos: palabra clave, nutriente, número, unidad, ingrediente
+    y separador. Cada token trae lexema, tipo, línea y columna.
+    El ejemplo de la propuesta produce 13 tokens, de Porción hasta
+    glutamato monosódico. Un carácter extraño, un número como 12.
+    o una palabra fuera del lenguaje se avisan y no se cuelan como
+    token válido. La pantalla todavía no muestra estos tokens.
+
+[x] 3. Análisis sintáctico
+    Hecho en src/traductor/analisis-sintactico.ts.
+    Gramática: Porción, uno o más nutrientes, e Ingredientes.
+    Cada campo es nombre, dos puntos, número y unidad. Los ingredientes
+    van separados por comas. El ejemplo de la propuesta produce el árbol
+    Etiqueta → Porción 30 g, Azúcares 12 g y los dos ingredientes.
+    Si falta la porción, la unidad o la lista de ingredientes, el texto
+    no pasa. Una unidad incompatible (azúcar en kcal) todavía se acepta
+    aquí: la revisa el paso 4. La pantalla todavía no muestra el árbol.
+
+[x] 4. Análisis semántico
+    Código en src/traductor/analisis-semantico.ts. Consulta en
+    src/traductor/tabla-simbolos.ts.
+    Unidades: porción, azúcares y grasas en g; sodio en mg; calorías
+    en kcal. Si el azúcar viene en kcal, no recibe nivel.
+    Inconsistencias: valores negativos, porción en cero y azúcares
+    mayores que la porción.
+    Umbrales por porción. Bajo es menor que el primer número; alto
+    empieza en el segundo.
+      Azúcares: 5 g y 12 g. 12 g es Alto.
+      Sodio: 120 mg y 600 mg. 180 mg es Moderado.
+      Grasas: 5 g y 15 g. 3 g es Bajo.
+      Calorías: 150 kcal y 400 kcal. 120 kcal es Bajo.
+    El nivel global es el más alto entre los nutrientes.
+    La tabla public.ingredientes ya responde. Jarabe de maíz de alta
+    fructosa y glutamato monosódico se leen desde Supabase. 12 g de
+    azúcar en 30 g queda en Alto. La pantalla todavía no muestra el
+    resultado.
+
+[x] 5. Traducción y reporte
+    Hecho en src/traductor/traduccion.ts. Ingresar datos lee porción,
+    nutrientes e ingredientes y guarda el reporte de esa visita.
+    12 g de azúcar equivalen a 3 cucharaditas. Los ingredientes usan
+    el significado leído de Supabase. La pantalla de resultado ya no
+    muestra el cereal fijo. Guardar el historial queda para el paso 8.
+    La foto queda para el paso 7.
+
+[x] 6. Apartado visual del proceso
+    En Resultado, la sección «Cómo se analizó» muestra el texto fuente,
+    los tokens, el árbol, las reglas y los errores del análisis que
+    acaba de correr. La traducción sigue en «Tu etiqueta en palabras
+    simples». Si cambian los datos, cambia ese recorrido. La foto y el
+    historial guardado siguen pendientes.
+
+[x] 7. Lectura de imagen
+    Este paso es obligatorio para dar el sistema por terminado.
+    La cámara de la laptop no se usa. «Tomar foto» abre los archivos
+    para subir una imagen de la etiqueta ya tomada.
+    Reconocer el texto en el navegador, en español, sin enviar la
+    imagen a un servidor.
+    Mostrar el texto reconocido para corregirlo si la foto falló.
+    Al confirmar, usar el mismo traductor del paso 5.
+    Listo cuando: una foto de etiqueta con porción, azúcares e
+    ingredientes produce tokens, niveles y traducción. Si la foto
+    no se lee, se ve el aviso y el texto para corregir, no el
+    cereal de ejemplo.
+
+[x] 8. Historial en Supabase
+    Guardar cada análisis (texto, niveles, traducción y el recorrido
+    visual) en public.analisis.
+    Inicio e Historial leen esa tabla. Abrir un producto muestra el
+    reporte y «Cómo se analizó».
+    La clave publishable no crea la tabla: ejecutar
+    supabase/analisis.sql en el editor SQL.
+    Listo cuando: al recargar la página el producto sigue en Inicio
+    e Historial, leído desde Supabase.
+
+[x] 9. Cierre
+    Probar los dos caminos con el caso de la propuesta:
+      escrito a mano, y foto de una etiqueta con esos datos.
+    Los dos deben dar nivel Alto en azúcares, la equivalencia en
+    cucharaditas y las dos traducciones de ingredientes.
+    El análisis y la lectura de la imagen permanecen en el navegador.
+    Supabase solo guarda ingredientes e historial.
+    Listo cuando: esos dos caminos coinciden y Escanear ya no
+    simula una espera vacía.
+
+
+Orden de una sesión de trabajo
+------------------------------
+Haz un solo paso de la secuencia. Al terminarlo:
+  1. Márcalo con [x].
+  2. Agrega una línea en la bitácora.
+  3. Prueba en la app el camino que ese paso tocó
+     (formulario, resultado, apartado visual o foto).
+No adelantes la foto (paso 7) antes del reporte (paso 5):
+la imagen solo entrega texto; quien decide niveles y traducción
+es el traductor.
+
+
+Bitácora
+--------
+2026-10-26 | Se escribe esta secuencia. Sin cambios de funcionamiento.
+             Sigue el paso 1, lenguaje fuente.
+2026-10-26 | Se conecta Supabase. Cliente en src/lib/supabase.ts.
+             La clave publishable queda en .env.local, fuera de git.
+             Aún no hay tablas ni pantallas que lean datos.
+             Sigue el paso 1, lenguaje fuente.
+2026-10-26 | Paso 1 listo. src/traductor/lenguaje-fuente.ts define la
+             secuencia de campos, las unidades permitidas y el rechazo
+             de una etiqueta incompleta. El ejemplo de la propuesta pasa.
+             La interfaz todavía no usa el módulo. Sigue el paso 2,
+             análisis léxico.
+2026-10-26 | Paso 2 listo. src/traductor/analisis-lexico.ts parte el texto
+             en tokens con lexema, tipo y posición. El ejemplo de la
+             propuesta da la lista esperada. Los errores léxicos se
+             avisan. La interfaz todavía no los muestra. Sigue el paso 3,
+             análisis sintáctico.
+2026-10-26 | Paso 3 listo. src/traductor/analisis-sintactico.ts arma el
+             árbol de la etiqueta a partir de los tokens. El ejemplo de
+             la propuesta genera Porción, Azúcares e Ingredientes. Un
+             texto sin porción, sin unidad o sin ingredientes no pasa.
+             La interfaz todavía no muestra el árbol. Sigue el paso 4,
+             análisis semántico.
+2026-10-27 | Paso 4 en código. Las reglas de unidad, inconsistencia y
+             nivel viven en src/traductor/analisis-semantico.ts.
+             12 g de azúcar en 30 g es Alto. Un número negativo ahora
+             pasa el léxico (signo menos) y lo rechaza la semántica.
+             Falta crear public.ingredientes con supabase/ingredientes.sql.
+             La clave publishable no puede crear esa tabla.
+2026-10-27 | La tabla public.ingredientes ya responde. Se leen jarabe
+             de maíz de alta fructosa y glutamato monosódico. El
+             ejemplo queda en Alto. Paso 4 listo. Sigue el paso 5,
+             traducción y reporte.
+2026-10-27 | Paso 5 listo. Ingresar datos traduce la etiqueta escrita y
+             Resultado muestra niveles, equivalencias y el lenguaje
+             cotidiano. 12 g de azúcar son 3 cucharaditas. Ya no se usa
+             el reporte fijo. Sigue el paso 6, el apartado visual.
+2026-10-27 | Paso 6 listo. Resultado muestra texto, tokens, árbol,
+             reglas y errores del análisis real, junto a la traducción.
+             Sigue el paso 7, lectura de imagen.
+2026-10-27 | Se comprobó Ingresar datos con porción 30 g, azúcares 12 g,
+             sodio 180 mg, grasas 3 g, calorías 120 kcal y los dos
+             ingredientes. El resultado quedó en Alto, con 3
+             cucharaditas, tokens, árbol y las traducciones de
+             Supabase. La foto y el historial guardado siguen pendientes.
+2026-10-27 | Paso 7 listo. «Tomar foto» no abre la cámara: deja elegir
+             una imagen ya tomada. El texto se lee en el navegador y se
+             puede corregir. Una etiqueta con porción 30 g, azúcares
+             12 g y los dos ingredientes quedó en Alto, con 3
+             cucharaditas, tokens y las traducciones de Supabase. Una
+             foto sin texto avisa y deja el recuadro vacío. Sigue el
+             paso 8, historial en Supabase.
+2026-10-27 | Paso 8 en código. Cada análisis se guarda en
+             public.analisis con el reporte completo. Inicio e Historial
+             leen esa tabla y ya no usan la lista de ejemplo. Abrir una
+             fila muestra reporte y recorrido. La tabla todavía no
+             existe: hay que ejecutar supabase/analisis.sql. La clave
+             publishable no puede crearla.
+2026-10-27 | Paso 8 listo. La tabla public.analisis ya responde. Un
+             cereal con porción 30 g y azúcares 12 g quedó guardado.
+             Al recargar, Inicio e Historial siguen mostrando Cereal
+             de chocolate en Alto. Abrirlo otra vez muestra 3
+             cucharaditas, los tokens y las traducciones de Supabase.
+             Sigue el paso 9, el cierre con los dos caminos.
+2026-10-27 | Paso 9 listo. El formulario y una foto de la misma
+             etiqueta coinciden: azúcares Alto, 3 cucharaditas, sodio
+             moderado, grasas y calorías bajas, y las dos traducciones
+             de Supabase. La foto se leyó en el navegador; «3g» y las
+             líneas en blanco no cambiaron el resultado. Escanear ya
+             no simula una espera. Los dos análisis quedan en el
+             historial. El sistema está completo.
+2026-10-27 | Se amplía el lenguaje con grasas saturadas, fibra y
+             proteína. El nivel global no las cuenta como alerta.
+             4 g de fibra son 1 manzana mediana y 6 g de proteína son
+             1 huevo grande. El trabajo que falta quedó en PLAN.txt.

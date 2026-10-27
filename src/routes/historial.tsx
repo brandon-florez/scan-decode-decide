@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { PhoneShell } from "@/components/PhoneShell";
-import { history, levelClasses, levelDot, levelLabel } from "@/data/nutrilex";
+import { ListaAnalisis } from "@/components/TarjetaAnalisis";
 
 export const Route = createFileRoute("/historial")({
   component: Historial,
@@ -26,27 +26,7 @@ function Historial() {
     <PhoneShell>
       <h1 className="text-2xl font-extrabold text-foreground">Historial</h1>
       <p className="mt-1 text-sm text-muted-foreground">Productos que ya analizaste.</p>
-
-      <ul className="mt-6 space-y-3">
-        {history.map((item) => (
-          <li key={item.name}>
-            <Link
-              to="/resultado"
-              className="flex items-center justify-between rounded-2xl border border-border bg-card p-4"
-            >
-              <div>
-                <p className="font-bold text-foreground">{item.name}</p>
-                <p className="text-sm text-muted-foreground">{item.when}</p>
-              </div>
-              <span
-                className={`rounded-full px-3 py-1 text-sm font-bold ${levelClasses[item.level]}`}
-              >
-                {levelDot[item.level]} {levelLabel[item.level]}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <ListaAnalisis className="mt-6" />
     </PhoneShell>
   );
 }

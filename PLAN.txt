@@ -1,0 +1,150 @@
+NutriLex — plan para dejarlo terminable
+=======================================
+
+Este archivo es el segundo seguimiento. SEGUIMIENTO.txt guarda lo ya
+construido (pasos 1 a 9). Aquí está solo lo que falta para que una
+etiqueta en español, no solo el ejemplo de la propuesta, se traduzca
+y el sistema se pueda dar por terminado.
+
+No sustituye a SEGUIMIENTO.txt. Al cerrar un punto de esta lista:
+  1. Márcalo con [x].
+  2. Anota la fecha en la bitácora de abajo.
+  3. Prueba ese punto en la app.
+
+
+Qué significa terminado
+------------------------
+Una etiqueta en español, escrita o en foto, con porción y al menos un
+nutriente, produce niveles, equivalencias y traducción.
+
+El nivel global mira azúcares, sodio, grasas, grasas saturadas y
+calorías. Fibra y proteína se muestran aparte: ahí un nivel alto es
+un aporte, no una alerta.
+
+Un ingrediente que no esté en la tabla no cancela ese reporte: se ve
+como «sin traducción» y el resto sigue.
+
+La foto se lee en el navegador. El texto reconocido se puede corregir.
+La imagen no se envía a un servidor. El modelo de español sale del
+proyecto, no de una descarga.
+
+Inicio e Historial siguen guardando el análisis en Supabase.
+La pantalla sigue dentro del celular.
+
+
+Qué ya quedó hecho en esta etapa
+--------------------------------
+[x] Grasas saturadas, fibra y proteína
+    Entran al lenguaje, al formulario, al análisis y al reporte.
+    Grasas saturadas se vigilan: bajo es menor que 1,5 g y alto
+    empieza en 5 g. Fibra: bajo menor que 2 g, alto desde 6 g.
+    Proteína: bajo menor que 5 g, alto desde 12 g.
+    4 g de fibra equivalen a 1 manzana mediana.
+    6 g de proteína equivalen a 1 huevo grande.
+    4,5 g de grasa saturada equivalen a 1 cucharadita de grasa.
+    El nivel global no sube por fibra ni por proteína.
+    Listo cuando: una etiqueta con 12 g de azúcar sigue en Alto,
+    la fibra alta no la vuelve una alerta, y una etiqueta solo con
+    fibra también produce reporte.
+
+
+Qué hay que trabajar, en orden
+------------------------------
+
+[x] 1. Un ingrediente desconocido no cancela el reporte
+    Hoy, si un nombre no está en public.ingredientes, no hay niveles
+    ni equivalencias.
+    El nutriente se califica igual. Ese ingrediente aparece con el
+    texto «Sin traducción en la tabla» y el análisis sigue siendo
+    válido.
+    Listo cuando: azúcares 12 g más un ingrediente inventado dan
+    nivel Alto y 3 cucharaditas, y el ingrediente se ve sin traducción.
+
+[ ] 2. Catálogo de ingredientes
+    Ampliar public.ingredientes con aditivos y códigos E habituales
+    en etiquetas en español. Cada fila trae nombre, código si existe,
+    significado cotidiano y nivel.
+    Hace falta un script SQL nuevo. La clave publishable no inserta
+    esa lista: hay que ejecutarla en el editor de Supabase.
+    No hace falta cubrir todos los ingredientes del mundo. Con el
+    punto 1, lo que falte se muestra sin traducción.
+    Listo cuando: al menos los aditivos frecuentes del ejemplo y un
+    grupo breve de códigos E (colorantes, conservadores y
+    potenciadores) se traducen desde Supabase.
+
+[ ] 3. Leer el texto de una etiqueta real
+    Después de la foto, y antes del análisis, ordenar en el navegador
+    las formas que sí aparecen en una etiqueta:
+      porción, tamaño de la porción
+      azúcares, azúcares totales
+      sodio
+      grasas, grasa total
+      grasas saturadas, grasa saturada
+      fibra, fibra dietética
+      proteína, proteínas
+      calorías, energía, contenido energético
+      ingredientes
+      unidades g, gr, gramos, mg, miligramos y kcal
+    El resultado es el lenguaje fuente, se muestra para corregirlo
+    y entra al mismo traductor.
+    Grasas saturadas, fibra, proteína, sodio o calorías que no
+    aparezcan se omiten. No se inventan.
+    Listo cuando: un texto desordenado de etiqueta, con «Tamaño de
+    la porción», «Azúcares totales» y «Grasa saturada», produce el
+    mismo nivel que si se hubiera escrito en el formato fijo.
+
+[ ] 4. Modelo de español dentro del proyecto
+    spa.traineddata ya está en la carpeta del proyecto y la lectura
+    todavía lo pide por internet la primera vez.
+    Usarlo desde el proyecto para que la imagen y el reconocimiento
+    se queden en el navegador.
+    Listo cuando: la primera lectura de una foto no depende de bajar
+    el modelo, y una foto sin texto sigue avisando y deja corregir.
+
+[ ] 5. Lavado de cara, sin salir del celular
+    La forma de teléfono se queda, por las implementaciones futuras.
+    No es un rediseño abierto. En las pantallas que ya existen:
+      separar con claridad lo que se vigila y lo que es aporte
+      (fibra y proteína);
+      acortar los textos de ayuda;
+      dejar el formulario de los siete nutrientes legible, sin
+      que el botón de analizar quede escondido;
+      mantener el mismo recorrido de Inicio, Escanear, Resultado
+      e Historial.
+    Listo cuando: en el celular se distingue un azúcar alto de una
+    fibra alta sin leer la letra pequeña, y las cuatro pantallas
+    siguen en el mismo marco.
+
+[ ] 6. Cierre con una etiqueta real
+    Probar los dos caminos con una etiqueta que no sea solo el
+    ejemplo de la propuesta: porción, varios nutrientes (incluidos
+    fibra o proteína), un ingrediente de la tabla y otro que no esté.
+    Escrito y foto deben coincidir en niveles, equivalencias y
+    traducciones. Los dos quedan en el historial.
+    Listo cuando: ese caso pasa, la foto se pudo corregir si la
+    lectura falló, y no aparece el reporte fijo de cereal.
+
+
+Fuera de este plan
+------------------
+No entra una recomendación médica.
+No entra leer etiquetas en otro idioma.
+No entra acertar el cien por ciento de las fotos borrosas o torcidas:
+para eso queda el texto corregible.
+No entra calificar fibra, proteína, grasas saturadas ni el resto con
+otro semáforo distinto del que ya usa el sistema.
+No entra cambiar el marco de celular por una pantalla de escritorio.
+
+
+Bitácora
+--------
+2026-10-27 | Se abre este plan. Grasas saturadas, fibra y proteína ya
+             están en el lenguaje y en el formulario. 12 g de azúcar
+             siguen en Alto. 4 g de fibra son 1 manzana mediana y no
+             cambian el nivel global. 6 g de proteína son 1 huevo
+             grande. Sigue el punto 1: un ingrediente desconocido no
+             debe cancelar el reporte.
+2026-10-27 | Punto 1 listo. 12 g de azúcar con «polvo de estrellas»
+             quedan en Alto y en 3 cucharaditas. El jarabe sigue
+             traducido y el nombre desconocido dice «Sin traducción
+             en la tabla». Sigue el punto 2, el catálogo de ingredientes.
