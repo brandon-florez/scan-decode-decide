@@ -320,16 +320,10 @@ function cierreDeNivel(id: IdNutriente, nivel: Nivel): string {
 }
 
 function resumenDe(nivel: Nivel, vigila: boolean): string {
-  if (!vigila) {
-    return "Esta etiqueta no trae azúcares, sodio, grasas ni calorías. El nivel global queda en bajo porque no hay una alerta. La fibra y la proteína se leen aparte.";
-  }
-  if (nivel === "alto") {
-    return "Este producto tiene un nivel alto en al menos un nutriente que conviene vigilar. La fibra y la proteína, si aparecen, se leen aparte.";
-  }
-  if (nivel === "moderado") {
-    return "Este producto se queda en un nivel moderado en lo que conviene vigilar. La fibra y la proteína, si aparecen, se leen aparte.";
-  }
-  return "Azúcares, sodio, grasas y calorías revisados están en un nivel bajo para esta porción. La fibra y la proteína, si aparecen, se leen aparte.";
+  if (!vigila) return "No hay una alerta. Fibra y proteína se leen como aporte.";
+  if (nivel === "alto") return "Hay algo alto en lo que conviene vigilar.";
+  if (nivel === "moderado") return "Lo que conviene vigilar queda en moderado.";
+  return "Lo que conviene vigilar está bajo.";
 }
 
 function consejosDe(nutrientes: readonly NutrienteReporte[]): string[] {

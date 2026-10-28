@@ -15,7 +15,7 @@ export function PhoneShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-accent/40 py-0 sm:py-8">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background sm:min-h-[calc(100vh-4rem)] sm:rounded-4xl sm:shadow-[var(--shadow-soft)]">
-        <main className="flex-1 px-5 pb-28 pt-8">{children}</main>
+        <main className="flex-1 px-5 pb-36 pt-8">{children}</main>
 
         <nav className="sticky bottom-0 z-10 rounded-t-3xl border-t border-border bg-background/95 px-3 py-2 backdrop-blur sm:rounded-b-4xl">
           <ul className="flex items-end justify-around">

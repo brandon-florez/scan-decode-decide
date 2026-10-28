@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { Camera, Loader2 } from "lucide-react";
 import { PhoneShell } from "@/components/PhoneShell";
+import { ordenarEtiquetaReal } from "@/traductor/etiqueta-real";
 import { leerTextoDeImagen } from "@/traductor/lectura-imagen";
 import { publicarReporte } from "@/traductor/historial";
 import { traducirEtiqueta } from "@/traductor/traduccion";
@@ -72,12 +73,15 @@ function Escanear() {
 
     try {
       const leido = await leerTextoDeImagen(archivo);
-      setTexto(leido);
-      setAvisoLectura(
-        leido
-          ? "Revisa el texto. Corrígelo si la foto no se leyó bien y luego analízalo."
-          : "No se leyó texto en la foto. Escríbelo en el recuadro para poder analizarlo.",
-      );
+      const ordenado = leido ? ordenarEtiquetaReal(leido) : null;
+      setTexto(ordenado ?? leido);
+      if (!leido) {
+        setAvisoLectura("No se leyó texto en la foto. Escríbelo en el recuadro para poder analizarlo.");
+      } else if (ordenado) {
+        setAvisoLectura("Revisa el texto ordenado. Corrígelo si no coincide con la foto y luego analízalo.");
+      } else {
+        setAvisoLectura("No pude ordenar este texto al formato de la etiqueta. Corrígelo en el recuadro y luego analízalo.");
+      }
     } catch {
       setTexto("");
       setAvisoLectura(
@@ -90,7 +94,13 @@ function Escanear() {
   async function analizar() {
     setEnviando(true);
     setErrores([]);
-    const resultado = await traducirEtiqueta(texto, "Etiqueta de la foto");
+    const ordenado = ordenarEtiquetaReal(texto);
+    const fuente = ordenado ?? texto;
+    if (fuente !== texto) {
+      setTexto(fuente);
+      setAvisoLectura("Revisa el texto ordenado. Corrígelo si no coincide con la foto y luego analízalo.");
+    }
+    const resultado = await traducirEtiqueta(fuente, "Etiqueta de la foto");
     setEnviando(false);
 
     if (!resultado.ok) {
@@ -107,7 +117,7 @@ function Escanear() {
     <PhoneShell>
       <h1 className="text-2xl font-extrabold text-foreground">Escanear etiqueta</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Elige una foto de la etiqueta que ya tengas guardada. La cámara no se usa y la imagen no sale de este navegador.
+        Elige una foto guardada. La imagen se queda en este navegador.
       </p>
 
       <input
@@ -145,9 +155,7 @@ function Escanear() {
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground"
             placeholder={"Porción: 30 g\nAzúcares: 12 g\nIngredientes: ..."}
           />
-          <p className="text-xs text-muted-foreground">
-            Cada dato va en su línea, con dos puntos y su unidad. Los ingredientes van al final, separados por comas.
-          </p>
+          <p className="text-xs text-muted-foreground">Se ordena sola. Lo que falte no se inventa.</p>
           {errores.length > 0 && (
             <ul className="space-y-1 rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {errores.map((error) => (
@@ -165,7 +173,7 @@ function Escanear() {
               type="button"
               onClick={() => void analizar()}
               disabled={enviando || texto.trim() === ""}
-              className="flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-5 text-lg font-bold text-primary-foreground disabled:opacity-60"
+              className="flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-4 text-lg font-bold text-primary-foreground disabled:opacity-60"
             >
               {enviando ? "Analizando..." : "Analizar esta etiqueta"}
             </button>

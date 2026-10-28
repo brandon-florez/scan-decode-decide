@@ -1,5 +1,7 @@
 /**
- * La tabla de símbolos vive en Supabase. El navegador solo la consulta.
+ * La tabla de símbolos vive en Supabase. El navegador la consulta y,
+ * si faltan los nombres de esta etiqueta, los completa con la misma lista
+ * que está al final de supabase/catalogo.sql.
  */
 
 import { supabase } from "@/lib/supabase";
@@ -33,7 +35,73 @@ export async function leerTablaSimbolos(): Promise<LecturaTabla> {
     if (simbolo) simbolos.push(simbolo);
   }
 
-  return { ok: true, simbolos };
+  return { ok: true, simbolos: completarConEstaEtiqueta(simbolos) };
+}
+
+/**
+ * Nombres de la crema de verduras que aún no están en public.ingredientes.
+ * Si Supabase ya trae el mismo nombre, se queda el de la base.
+ * La lista coincide con el final de supabase/catalogo.sql.
+ */
+const DE_ESTA_ETIQUETA: readonly SimboloIngrediente[] = [
+  { nombre: "zanahoria", codigo: null, significado: "Hortaliza", nivel: "bajo" },
+  { nombre: "raíz de apio", codigo: null, significado: "Hortaliza", nivel: "bajo" },
+  { nombre: "cebolla", codigo: null, significado: "Hortaliza", nivel: "bajo" },
+  { nombre: "tomate", codigo: null, significado: "Hortaliza", nivel: "bajo" },
+  { nombre: "chirivía", codigo: null, significado: "Hortaliza", nivel: "bajo" },
+  { nombre: "patata", codigo: null, significado: "Tubérculo", nivel: "bajo" },
+  { nombre: "calabaza", codigo: null, significado: "Hortaliza", nivel: "bajo" },
+  { nombre: "puerro", codigo: null, significado: "Hortaliza", nivel: "bajo" },
+  { nombre: "nabo", codigo: null, significado: "Hortaliza", nivel: "bajo" },
+  {
+    nombre: "leche mazada reconstituida",
+    codigo: null,
+    significado: "Suero de mantequilla en polvo, vuelto a mezclar con agua",
+    nivel: "moderado",
+  },
+  {
+    nombre: "leche desnatada reconstituida",
+    codigo: null,
+    significado: "Leche descremada en polvo, vuelta a mezclar con agua",
+    nivel: "moderado",
+  },
+  {
+    nombre: "almidón modificado de maíz",
+    codigo: null,
+    significado: "Almidón de maíz tratado para espesar",
+    nivel: "moderado",
+  },
+  {
+    nombre: "zumo de acerola reconstituido",
+    codigo: null,
+    significado: "Jugo de acerola vuelto a diluir; aporta su azúcar",
+    nivel: "moderado",
+  },
+  { nombre: "aromas", codigo: null, significado: "Sabor añadido", nivel: "moderado" },
+  {
+    nombre: "zumos concentrados vegetales (contiene raíz de apio)",
+    codigo: null,
+    significado: "Jugos de verdura concentrados",
+    nivel: "bajo",
+  },
+];
+
+function completarConEstaEtiqueta(simbolos: readonly SimboloIngrediente[]): SimboloIngrediente[] {
+  const presentes = new Set(simbolos.map((simbolo) => normalizar(simbolo.nombre)));
+  const completos = [...simbolos];
+  for (const extra of DE_ESTA_ETIQUETA) {
+    if (!presentes.has(normalizar(extra.nombre))) completos.push(extra);
+  }
+  return completos;
+}
+
+function normalizar(valor: string): string {
+  return valor
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function interpretarFila(fila: unknown): SimboloIngrediente | undefined {

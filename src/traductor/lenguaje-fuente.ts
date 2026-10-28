@@ -4,7 +4,7 @@
  * o no hay ingredientes, el análisis no empieza.
  */
 
-export const UNIDADES = ["g", "mg", "kcal"] as const;
+export const UNIDADES = ["g", "mg", "kcal", "ml"] as const;
 export type Unidad = (typeof UNIDADES)[number];
 
 export const NUTRIENTES = [
@@ -143,7 +143,7 @@ export function frasesDelLenguaje(): readonly string[] {
   return [...frases, ...Object.keys(ALIAS_NUTRIENTE), ...UNIDADES];
 }
 
-export const UNIDADES_PORCION = ["g"] as const satisfies readonly Unidad[];
+export const UNIDADES_PORCION = ["g", "ml"] as const satisfies readonly Unidad[];
 
 export const UNIDADES_POR_NUTRIENTE: Record<IdNutriente, readonly Unidad[]> = {
   azucares: ["g"],

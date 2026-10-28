@@ -28,6 +28,14 @@ export function clasesDeNivel(nivel: Level, sentido?: "vigilar" | "aportar"): st
   return levelClasses[nivel];
 }
 
+/** La palabra del semáforo. En un aporte, «Aporta» no se lee como alerta. */
+export function etiquetaDeNivel(nivel: Level, sentido?: "vigilar" | "aportar"): string {
+  if (sentido !== "aportar") return levelLabel[nivel];
+  if (nivel === "alto") return "Aporta";
+  if (nivel === "bajo") return "Poco";
+  return "Aporte medio";
+}
+
 export const levelExplanations: {
   level: Level;
   title: string;
@@ -36,22 +44,20 @@ export const levelExplanations: {
   {
     level: "bajo",
     title: "Bajo",
-    text: "La cantidad de este nutriente es pequeña en relación con lo que se suele consumir al día.",
+    text: "Poca cantidad en la porción.",
   },
   {
     level: "moderado",
     title: "Moderado",
-    text: "La cantidad no es ni poca ni mucha. Conviene tenerla en cuenta si consumes varios productos similares.",
+    text: "Ni poca ni mucha.",
   },
   {
     level: "alto",
     title: "Alto",
-    text: "La cantidad de este nutriente es grande comparada con lo habitual. La etiqueta lo indica para que lo sepas.",
+    text: "Mucha cantidad. Conviene mirarlo.",
   },
 ];
 
-export const aporteNote =
-  "El nivel global mira azúcares, sodio, grasas, grasas saturadas y calorías. En fibra y proteína, alto significa que la porción aporta bastante.";
+export const aporteNote = "En verde, la fibra o la proteína suman. En rojo, conviene vigilar.";
 
-export const informativeNote =
-  "NutriLex traduce la información de las etiquetas a palabras simples. Es una herramienta meramente informativa: no emite alertas de salud ni recomendaciones médicas.";
+export const informativeNote = "Solo informa. No es un consejo médico.";

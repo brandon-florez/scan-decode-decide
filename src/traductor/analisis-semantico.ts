@@ -129,7 +129,7 @@ export function evaluarEtiqueta(
   let porcionUtil = false;
 
   if (!unidadPorcion) {
-    errores.push({ mensaje: "La unidad de la porción debe ser g.", posicion: porcion.posicion });
+    errores.push({ mensaje: "La unidad de la porción debe ser g o ml.", posicion: porcion.posicion });
   } else if (porcion.valor < 0) {
     errores.push({ mensaje: "La porción no puede ser negativa.", posicion: porcion.posicion });
   } else if (porcion.valor === 0) {
@@ -140,7 +140,7 @@ export function evaluarEtiqueta(
   }
 
   const nutrientes = arbol.nutrientes.map((nodo) =>
-    evaluarNutriente(nodo, porcion.lexema, porcion.valor, porcionUtil, errores, reglas),
+    evaluarNutriente(nodo, porcion.lexema, porcion.valor, unidadPorcion ?? "g", porcionUtil, errores, reglas),
   );
 
   const ingredientes = consultarIngredientes
@@ -166,6 +166,7 @@ function evaluarNutriente(
   nodo: NodoNutriente,
   lexemaPorcion: string,
   porcion: number,
+  unidadPorcion: string,
   porcionUtil: boolean,
   errores: ErrorSemantico[],
   reglas: string[],
@@ -201,8 +202,8 @@ function evaluarNutriente(
   if (EN_GRAMOS.has(nodo.id) && porcionUtil && nodo.cantidad.valor > porcion) {
     const mensaje =
       nodo.id === "azucares"
-        ? `Los azúcares (${nodo.cantidad.lexema} g) superan la porción (${lexemaPorcion} g).`
-        : `La cantidad de ${frase} (${nodo.cantidad.lexema} g) supera la porción (${lexemaPorcion} g).`;
+        ? `Los azúcares (${nodo.cantidad.lexema} g) superan la porción (${lexemaPorcion} ${unidadPorcion}).`
+        : `La cantidad de ${frase} (${nodo.cantidad.lexema} g) supera la porción (${lexemaPorcion} ${unidadPorcion}).`;
     errores.push({ mensaje, posicion: nodo.cantidad.posicion });
     return { ...base, unidad };
   }

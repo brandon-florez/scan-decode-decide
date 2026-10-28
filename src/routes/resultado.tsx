@@ -2,10 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { FlaskConical, Lightbulb, ChevronLeft, Languages, Info, GitBranch } from "lucide-react";
 import { PhoneShell } from "@/components/PhoneShell";
-import { aporteNote, clasesDeNivel, levelClasses, levelDot, levelExplanations, levelLabel, informativeNote } from "@/data/nutrilex";
+import { aporteNote, clasesDeNivel, etiquetaDeNivel, levelClasses, levelDot, levelExplanations, levelLabel, informativeNote } from "@/data/nutrilex";
 import type { IdNutriente } from "@/traductor/lenguaje-fuente";
 import { leerAnalisis } from "@/traductor/historial";
-import { guardarReporte, leerReporte, type Reporte } from "@/traductor/traduccion";
+import { guardarReporte, leerReporte, type NutrienteReporte, type Reporte } from "@/traductor/traduccion";
 
 type BusquedaResultado = {
   id?: string;
@@ -44,6 +44,38 @@ const icono: Record<IdNutriente, string> = {
   proteina: "🥚",
   calorias: "⚡",
 };
+
+function GrupoNutrientes({
+  titulo,
+  nota,
+  nutrientes,
+}: {
+  titulo: string;
+  nota: string;
+  nutrientes: readonly NutrienteReporte[];
+}) {
+  if (nutrientes.length === 0) return null;
+
+  return (
+    <section className="mt-6">
+      <h2 className="text-sm font-bold uppercase tracking-wide text-foreground">{titulo}</h2>
+      <p className="text-sm text-muted-foreground">{nota}</p>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        {nutrientes.map((nutriente) => (
+          <div key={nutriente.id} className="rounded-2xl border border-border bg-card p-4">
+            <p className="text-2xl">{icono[nutriente.id]}</p>
+            <p className="mt-1 font-bold text-foreground">{nutriente.nombre}</p>
+            <span
+              className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-bold ${clasesDeNivel(nutriente.nivel, nutriente.sentido)}`}
+            >
+              {etiquetaDeNivel(nutriente.nivel, nutriente.sentido)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function Resultado() {
   const { id } = Route.useSearch();
@@ -125,23 +157,22 @@ function Resultado() {
         <p className="mt-2 text-sm font-medium text-foreground/80">{reporte.resumen}</p>
       </section>
 
-      <section className="mt-6 grid grid-cols-2 gap-3">
-        {reporte.nutrientes.map((nutriente) => (
-          <div key={nutriente.id} className="rounded-2xl border border-border bg-card p-4">
-            <p className="text-2xl">{icono[nutriente.id]}</p>
-            <p className="mt-1 font-bold text-foreground">{nutriente.nombre}</p>
-            <span className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-bold ${clasesDeNivel(nutriente.nivel, nutriente.sentido)}`}>
-              {levelDot[nutriente.nivel]} {levelLabel[nutriente.nivel]}
-            </span>
-          </div>
-        ))}
-      </section>
+      <GrupoNutrientes
+        titulo="Vigilar"
+        nota="Más cantidad, más alerta."
+        nutrientes={reporte.nutrientes.filter((nutriente) => nutriente.sentido !== "aportar")}
+      />
+      <GrupoNutrientes
+        titulo="Aporte"
+        nota="Más cantidad, más suma."
+        nutrientes={reporte.nutrientes.filter((nutriente) => nutriente.sentido === "aportar")}
+      />
 
       <section className="mt-8">
         <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
           <Languages className="size-5 text-primary" /> Tu etiqueta en palabras simples
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">Así se lee lo que escribiste de la etiqueta.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Traducción de lo que escribiste.</p>
         <ul className="mt-3 space-y-3">
           {reporte.traducciones.map((fila) => (
             <li key={fila.original} className="rounded-2xl border border-border bg-card p-4">
@@ -158,9 +189,7 @@ function Resultado() {
         <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
           <GitBranch className="size-5 text-primary" /> Cómo se analizó
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Este recorrido sale de la etiqueta que acabas de escribir.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Tokens, árbol y reglas de esta etiqueta.</p>
 
         <h3 className="mt-4 text-sm font-bold text-foreground">Texto fuente</h3>
         <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-2xl border border-border bg-card p-4 font-mono text-sm text-foreground">

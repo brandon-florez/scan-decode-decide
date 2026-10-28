@@ -60,19 +60,21 @@ Qué hay que trabajar, en orden
     Listo cuando: azúcares 12 g más un ingrediente inventado dan
     nivel Alto y 3 cucharaditas, y el ingrediente se ve sin traducción.
 
-[ ] 2. Catálogo de ingredientes
+[x] 2. Catálogo de ingredientes
     Ampliar public.ingredientes con aditivos y códigos E habituales
     en etiquetas en español. Cada fila trae nombre, código si existe,
     significado cotidiano y nivel.
-    Hace falta un script SQL nuevo. La clave publishable no inserta
-    esa lista: hay que ejecutarla en el editor de Supabase.
+    El script está en supabase/catalogo.sql: 142 nombres, con
+    alimentos de siempre y códigos E de color, conservador y sabor.
+    La clave publishable no inserta esa lista: hay que ejecutar el
+    script en el editor SQL de Supabase.
     No hace falta cubrir todos los ingredientes del mundo. Con el
     punto 1, lo que falte se muestra sin traducción.
     Listo cuando: al menos los aditivos frecuentes del ejemplo y un
     grupo breve de códigos E (colorantes, conservadores y
     potenciadores) se traducen desde Supabase.
 
-[ ] 3. Leer el texto de una etiqueta real
+[x] 3. Leer el texto de una etiqueta real
     Después de la foto, y antes del análisis, ordenar en el navegador
     las formas que sí aparecen en una etiqueta:
       porción, tamaño de la porción
@@ -93,7 +95,7 @@ Qué hay que trabajar, en orden
     la porción», «Azúcares totales» y «Grasa saturada», produce el
     mismo nivel que si se hubiera escrito en el formato fijo.
 
-[ ] 4. Modelo de español dentro del proyecto
+[x] 4. Modelo de español dentro del proyecto
     spa.traineddata ya está en la carpeta del proyecto y la lectura
     todavía lo pide por internet la primera vez.
     Usarlo desde el proyecto para que la imagen y el reconocimiento
@@ -101,7 +103,7 @@ Qué hay que trabajar, en orden
     Listo cuando: la primera lectura de una foto no depende de bajar
     el modelo, y una foto sin texto sigue avisando y deja corregir.
 
-[ ] 5. Lavado de cara, sin salir del celular
+[x] 5. Lavado de cara, sin salir del celular
     La forma de teléfono se queda, por las implementaciones futuras.
     No es un rediseño abierto. En las pantallas que ya existen:
       separar con claridad lo que se vigila y lo que es aporte
@@ -148,3 +150,32 @@ Bitácora
              quedan en Alto y en 3 cucharaditas. El jarabe sigue
              traducido y el nombre desconocido dice «Sin traducción
              en la tabla». Sigue el punto 2, el catálogo de ingredientes.
+2026-10-27 | Punto 2 en script. supabase/catalogo.sql carga 142
+             ingredientes: azúcar, sal, aceites, harinas y aditivos
+             con código E. La app no puede insertarlos. Falta
+             ejecutarlo en el editor SQL de Supabase.
+2026-10-27 | Punto 2 listo. public.ingredientes tiene 142 filas.
+             El jarabe y el glutamato siguen igual. Benzoato de sodio
+             sale como conservador, E102 como colorante amarillo y el
+             azúcar como azúcar añadida. Un nombre fuera de la lista
+             sigue sin traducción y el reporte queda en Alto, con 3
+             cucharaditas. Sigue el punto 3, leer el texto de una
+             etiqueta real.
+2026-10-27 | Punto 3 listo. Un texto con «Tamaño de la porción»,
+             «Azúcares totales», «Grasa saturada», «gramos» y
+             «miligramos» queda en el formato del traductor antes
+             del análisis. 12 g de azúcar siguen en Alto y en 3
+             cucharaditas. «Porciones por envase», la grasa trans,
+             los azúcares añadidos y los kJ no cambian esas cifras.
+             Lo que no aparece no se inventa. Sigue el punto 4, el
+             modelo de español dentro del proyecto.
+2026-10-27 | Punto 4 listo. La lectura usa public/spa.traineddata,
+             el modelo de español del proyecto. Una foto sin texto
+             avisa y deja escribir la etiqueta. Sigue el punto 5,
+             el lavado de cara dentro del celular.
+2026-10-27 | Punto 5 listo. Azúcar alto se ve en rojo como «Alto»
+             y fibra alta en verde como «Aporta». El formulario
+             agrupa vigilar y aporte, y el botón de analizar queda
+             por encima de la barra. Las cuatro pantallas siguen
+             en el celular. Sigue el punto 6, el cierre con una
+             etiqueta real.
